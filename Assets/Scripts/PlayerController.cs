@@ -72,24 +72,39 @@ public class PlayerController : MonoBehaviour
     }
 
     //commonly used function but not used in this case
-    void OnCollisionEnter(Collision collision)
+    void OnCollisionEnter(Collision collision) //when object comes into contact with collider
     {
-
+     //moved the code below so that program is constantly checking if player is in contact
     }
 
-    void OnCollisionStay(Collision collision)
-    {
+    void OnCollisionStay(Collision collision) //while object is in contact
+    {   //without this, program assumes anything is the ground, without regard to what angle you are contacting in with
+
         //check if angle between normal vector of object of contact and up vector is less than 45 degrees
         //AKA if-statement is true if player is touching another object that is 0 to 45 degrees slope
-        if (Vector3.Angle(collision.GetContact(0).normal, Vector3.up) < 45f)
+        /* if (Vector3.Angle(collision.GetContact(0).normal, Vector3.up) < 45f)
+             isGrounded = true;
+         else
+             isGrounded = false;*/
+
+        //use normal vectors to calculate if surface player is on is too steep for a jump
+        //gets normal vector of collision and gets the angle between the two normal angles. If it's less than 
+        //45 degrees, then we get to jump (so you can use the ramp, even without the ground tag)
+
+        Vector3 norm = collision.GetContact(0).normal; 
+
+        if (Vector3.Angle(norm, Vector3.up) < 45f)
             isGrounded = true;
-        else
-            isGrounded = false;
+
+        //or you can use below
+       /* if (collision.gameObject.CompareTag("Ground"))
+            isGrounded = true;*/
     }
 
-    void OnCollisionExit(Collision collision)
+    void OnCollisionExit(Collision collision) //when object stops contacting
     {
-        isGrounded = false;
+        if(collision.gameObject.CompareTag("Ground"))
+            isGrounded = false;
     }
 
     private void Respawn()
@@ -97,3 +112,6 @@ public class PlayerController : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
+
+//collision.GetContact(0) --> tells program to get first instance (0) in which object collides with collider
+//contains position and angle info which requires something else to 
